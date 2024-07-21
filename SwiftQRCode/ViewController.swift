@@ -42,14 +42,23 @@ class ViewController: UIViewController,AVCaptureMetadataOutputObjectsDelegate {
             previewLayer.frame = view.layer.bounds
             previewLayer.videoGravity = .resizeAspectFill
             view.layer.addSublayer(previewLayer)
-            captureSession.startRunning()
+            if  !captureSession.isRunning{
+                DispatchQueue.global(qos: .userInteractive).async {
+                    self.captureSession.startRunning()
+                }
+               
+            }
             
         }catch{
             debugPrint("something went wrong!!!")
         }
     }
     public func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
-        captureSession.stopRunning()
+        if captureSession.isRunning == true{
+            DispatchQueue.global(qos: .userInteractive).async {
+                self.captureSession.stopRunning()
+            }
+        }
         if let metadataObject = metadataObjects.first{
             guard let readableObject = metadataObject as? AVMetadataMachineReadableCodeObject else{
                 return
